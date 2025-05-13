@@ -1,4 +1,4 @@
-#🤟 American Sign Language (ASL) Recognition using Deep Learning
+# American Sign Language (ASL) Recognition using Deep Learning
 This project focuses on building a deep learning model capable of recognizing American Sign Language (ASL) hand gestures from images. The model classifies static hand signs representing the 26 letters (A-Z) and digits (0-9) using a custom dataset.
 
 📌 Features
@@ -12,10 +12,10 @@ High accuracy with low training time
 
 Real-time prediction capability (optional extension with webcam)
 
-#📁 Dataset
+# 📁 Dataset
 The dataset consists of folders named 0–9 and a–z, each containing JPEG images of corresponding hand signs.
 
-#⚙️ Technologies Used
+# ⚙️ Technologies Used
 Python
 
 TensorFlow / Keras
@@ -26,7 +26,7 @@ NumPy, Pandas
 
 Matplotlib, Seaborn (for visualization)
 
-#🧠 Model Architecture
+# 🧠 Model Architecture
 Input Layer: Resized grayscale images (e.g., 64x64)
 
 Conv2D + MaxPooling layers
