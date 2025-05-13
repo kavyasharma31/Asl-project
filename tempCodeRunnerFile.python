@@ -1,0 +1,73 @@
+from collections import defaultdict
+
+# Function to calculate the critical path
+def calculate_critical_path(tasks, dependencies, durations):
+    # Initialize data structures
+    graph = defaultdict(list)
+    in_degree = defaultdict(int)
+    for task, dep in dependencies:
+        graph[dep].append(task)
+        in_degree[task] += 1
+
+    # Step 1: Topological Sort (to process tasks in dependency order)
+    topological_order = []
+    zero_in_degree = [task for task in tasks if in_degree[task] == 0]
+
+    while zero_in_degree:
+        node = zero_in_degree.pop(0)
+        topological_order.append(node)
+        for neighbor in graph[node]:
+            in_degree[neighbor] -= 1
+            if in_degree[neighbor] == 0:
+                zero_in_degree.append(neighbor)
+
+    # Step 2: Calculate ES (Earliest Start) and EF (Earliest Finish) times
+    ES = {task: 0 for task in tasks}  # Earliest start times
+    EF = {task: 0 for task in tasks}  # Earliest finish times
+
+    for task in topological_order:
+        # Calculate EF for the task
+        EF[task] = ES[task] + durations[task]
+        # Update ES for the dependent tasks
+        for neighbor in graph[task]:
+            ES[neighbor] = max(ES[neighbor], EF[task])
+
+    # Step 3: Calculate LS (Latest Start) and LF (Latest Finish) times
+    LF = {task: float('inf') for task in tasks}  # Latest finish times
+    LS = {task: float('inf') for task in tasks}  # Latest start times
+
+    # Start with the last task, setting its LF to its EF value
+    for task in reversed(topological_order):
+        if not graph[task]:  # If it's a leaf node, its LF = EF
+            LF[task] = EF[task]
+        # Calculate LS and LF for the task and its dependent tasks
+        LS[task] = LF[task] - durations[task]
+        for neighbor in graph[task]:
+            LF[neighbor] = min(LF[neighbor], LS[task])
+
+    # Step 4: Identify the Critical Path
+    critical_path = []
+    for task in tasks:
+        if ES[task] == LS[task]:  # Task on the critical path
+            critical_path.append(task)
+
+    return ES, EF, LS, LF, critical_path
+
+# Example input
+tasks = ['A', 'B', 'C', 'D', 'E', 'F', 'G']
+dependencies = [('B', 'A'), ('C', 'A'), ('D', 'B'), ('E', 'B'), ('F', 'C'), ('G', 'D')]
+durations = {'A': 5, 'B': 10, 'C': 7, 'D': 8, 'E': 4, 'F': 6, 'G': 3}
+
+# Calculate critical path
+ES, EF, LS, LF, critical_path = calculate_critical_path(tasks, dependencies, durations)
+
+# Output the results
+print("Earliest Start Times (ES):", ES)
+print("Earliest Finish Times (EF):", EF)
+print("Latest Start Times (LS):", LS)
+print("Latest Finish Times (LF):", LF)
+print("Critical Path:", critical_path)
+
+# Calculate total project duration
+project_duration = max(EF[task] for task in tasks)
+print(f"Total Project Duration: {project_duration} days")
